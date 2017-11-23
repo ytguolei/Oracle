@@ -1,17 +1,10 @@
 CREATE OR REPLACE PACKAGE PG_ORD_VEPS_MOVEMENT AS
 
-  /******************************************************/
-  /* Created : 2017-11-17 16:11:04                       */
-  /* Description: VEPS≥µ¡æŒª“∆Ω⁄≈ƒ                    */
-  /******************************************************/
+  
   PROCEDURE VIECHLE_MOVEMENT(I_USER   IN NUMBER,
                              O_STATUS OUT VARCHAR2,
                              O_RESULT OUT VARCHAR2);
 
-  /******************************************************/
-  /* Created : 2017-10-30 16:11:04                       */
-  /* Description: VEPS≥µ¡æŒª“∆Ω⁄≈ƒ                    */
-  /******************************************************/
   PROCEDURE VIECHLE_MOVEMENT_OLD(I_USER   IN NUMBER,
                                  O_STATUS OUT VARCHAR2,
                                  O_RESULT OUT VARCHAR2);
@@ -24,8 +17,8 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                              O_STATUS OUT VARCHAR2,
                              O_RESULT OUT VARCHAR2) AS
   
-    V_SQLERRM VARCHAR2(1000); --¥ÌŒÛ–≈œ¢
-    --V_MONITOR_PARAMS        VARCHAR2(1000); -- ±®æØ ±µƒ≤Œ ˝ºØ∫œ
+    V_SQLERRM VARCHAR2(1000); --ÈîôËØØ‰ø°ÊÅØ
+    --V_MONITOR_PARAMS        VARCHAR2(1000); -- Êä•Ë≠¶Êó∂ÁöÑÂèÇÊï∞ÈõÜÂêà
     --V_MONITOR_WORKSHOP_CODE TM_MDS_WORKSHOP.WORKSHOP_CODE%TYPE;
     V_MONITOR_REGION_ID   TM_MDS_REGION.REGION_ID%TYPE;
     V_MONITOR_REGION_CODE TM_MDS_REGION.REGION_CODE%TYPE;
@@ -46,16 +39,16 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
     /*V_ISNULL_FIRST_FLAG  VARCHAR2(10);
     V_ISNULL_LAST_FLAG   VARCHAR2(10);*/
   
-    TYPE T_CAR_QUEUE IS TABLE OF VARCHAR2(4000); --∂®“Â±Ì¿‡–Õ
+    TYPE T_CAR_QUEUE IS TABLE OF VARCHAR2(4000); --ÂÆö‰πâË°®Á±ªÂûã
     VT_CAR_QUEUE T_CAR_QUEUE;
   
-    TYPE T_CAR_INFO IS TABLE OF VARCHAR2(4000); --∂®“Â±Ì¿‡–Õ
+    TYPE T_CAR_INFO IS TABLE OF VARCHAR2(4000); --ÂÆö‰πâË°®Á±ªÂûã
     VT_CAR_INFO T_CAR_INFO;
   
-    TYPE T_CAR_MOVEMENT IS TABLE OF VARCHAR2(4000); --∂®“Â±Ì¿‡–Õ
+    TYPE T_CAR_MOVEMENT IS TABLE OF VARCHAR2(4000); --ÂÆö‰πâË°®Á±ªÂûã
     VT_CAR_MOVEMENT T_CAR_MOVEMENT;
   
-    C_MONITOR_TYPE_MOVEMENT CONSTANT VARCHAR2(20) := '550016'; -- …˙≥…≥µ¡æŒª“∆Ω⁄≈ƒ ß∞‹±®æØ¥˙¬Î
+    C_MONITOR_TYPE_MOVEMENT CONSTANT VARCHAR2(20) := '550016';
   
     CURSOR CSR_REGION_VEPS IS(
     /*
@@ -106,7 +99,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
     V_TAB_TYPE_GROUP_NO TAB_TYPE_GROUP_NO;
   
   BEGIN
-    --œµÕ≥≥ı ºªØ£¨∏˘æ›√ø∏ˆEPS¿‡–Õº‡ ”«¯”Úµƒ¥Û–°£¨∞¥’’π§ŒªÀ≥–Ú“¿¥ŒΩ®¡¢∏˜∏ˆ«¯”Úµƒ≥ı ºŒª“∆£¨TT_ORD_EPS_MOVEMENT
+   
     FOR V_REGION_VEPS IN CSR_REGION_VEPS LOOP
       INSERT INTO TT_ORD_VEPS_MOVEMENT
         (CAR_QUEUE_REGION_ID,
@@ -159,7 +152,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                                                      NULL);
           CONTINUE;
       END;
-      --…æ≥˝π§ŒªÀ≥–Ú=0µƒº«¬º
+      
       DELETE FROM TT_ORD_VEPS_MOVEMENT VM
        WHERE EXISTS (SELECT 1
                 FROM TM_MDS_REGION R
@@ -169,12 +162,12 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
          AND VM.QAS_LOCATION_ORDER = 0;
     END LOOP;
   
-    --∏¸–¬π§ŒªÀ≥–Ú>0µƒº«¬ºCSN=NULL£¨PVI=NULL
+   
     UPDATE TT_ORD_VEPS_MOVEMENT VM
        SET VM.CSN = NULL, VM.PVI = NULL
      WHERE VM.QAS_LOCATION_ORDER > 0;
   
-    --ªÒ»°Õ¨“ªπ§≥ß£¨≥µº‰◊Ó–¬µƒ“ªÃı ˝æ›  
+    
     SELECT QI.QAS_INTERFACE_ID,
            QI.PLANT_CODE,
            QI.WORKSHOP_CODE,
@@ -189,9 +182,9 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
              GROUP BY OQI.PLANT_CODE, OQI.WORKSHOP_CODE);
   
     IF V_TAB_TYPE_ORD_QAS.COUNT > 0 THEN
-      --—≠ª∑¥¶¿ÌQASΩ”ø⁄ ˝æ›
+  
       FOR I IN V_TAB_TYPE_ORD_QAS.FIRST .. V_TAB_TYPE_ORD_QAS.LAST LOOP
-        --∞¥∂∫∫≈«–∑÷QAS≥µ¡æŒª“∆–≈œ¢
+       
         SELECT COLUMN_VALUE
           BULK COLLECT
           INTO VT_CAR_QUEUE
@@ -200,13 +193,13 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                                       LENGTH(V_TAB_TYPE_ORD_QAS(I)
                                              .V_CAR_QUEUE) - 1),
                                ','));
-        --—≠ª∑¥¶¿ÌQAS≥µ¡æŒª“∆–≈œ¢                       
+                           
         FOR J IN VT_CAR_QUEUE.FIRST .. VT_CAR_QUEUE.LAST LOOP
-          --ªÒ»°º‡ ”«¯”Ú¥˙¬Î
+        
           V_MONITOR_REGION_CODE := SUBSTR(TRIM(VT_CAR_QUEUE(J)),
                                           1,
                                           INSTR(TRIM(VT_CAR_QUEUE(J)), '=') - 1);
-          --ªÒ»°º‡ ”«¯”ÚID                               
+                                 
           BEGIN
             SELECT R.REGION_ID
               INTO V_MONITOR_REGION_ID
@@ -222,7 +215,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                                                          NULL);
               CONTINUE;
           END;
-          --∞¥|«–∑÷√ø∏ˆ≥µ¡æµƒŒª÷√–≈œ¢
+          
           SELECT COLUMN_VALUE
             BULK COLLECT
             INTO VT_CAR_INFO
@@ -252,7 +245,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                 CONTINUE;
             END;
           
-            --≥µ–Õ «0£¨129£¨256¥˙±Ì∏√π§Œª «∏ˆø’∞Â,÷±Ω”∏¸–¬PVI,CSNŒ™ø’
+        
             IF VT_CAR_MOVEMENT(3) = '0' OR VT_CAR_MOVEMENT(3) = '129' OR
                VT_CAR_MOVEMENT(3) = '256' THEN
               UPDATE TT_ORD_VEPS_MOVEMENT VM
@@ -261,7 +254,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                  AND VM.QAS_LOCATION_ORDER = VT_CAR_MOVEMENT(1);
             END IF;
           
-            --≥µ–Õ≤ª «0£¨129£¨256÷±Ω”∏¸–¬PVI,CSN
+         
             IF VT_CAR_MOVEMENT(3) <> '0' AND VT_CAR_MOVEMENT(3) <> '129' AND
                VT_CAR_MOVEMENT(3) <> '256' THEN
               UPDATE TT_ORD_VEPS_MOVEMENT VM
@@ -272,7 +265,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
           END LOOP;
         END LOOP;
       
-        --ADD 2017-11-14 ¥¶¿ÌÕÍ÷Æ∫Û–Ë“™∏¸–¬◊¥Ã¨Œ™“—¥¶¿Ì
+     
         UPDATE TI_ORD_QAS_INTERFACE QI
            SET QI.PROCESS_STATUS = '1'
          WHERE QI.QAS_INTERFACE_ID = V_TAB_TYPE_ORD_QAS(I)
@@ -292,7 +285,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
        GROUP BY VM.REGION_ID, R.GROUP_NO, R.REGION_ORDER
        ORDER BY R.GROUP_NO, R.REGION_ORDER;
     
-      --ADD 2017-11-14 º∆À„ª∫≥Â«¯≥µ¡æ
+    
       FOR L IN V_TAB_TYPE_CSN_REGION.FIRST .. V_TAB_TYPE_CSN_REGION.LAST LOOP
       
         SELECT R.REGION_ORDER, R.WORKSHOP_ID, R.GROUP_NO, R.SETOUT_FLAG
@@ -300,7 +293,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
           FROM TM_MDS_REGION R
          WHERE R.REGION_ID = V_TAB_TYPE_CSN_REGION(L).V_REGION_ID;
       
-        -- «(1)∑Ò(0)º∆À„setout≥µ¡æ 0:’˝≥£/1:setout/2:setin/3:produced
+       
         IF V_SETOUT_FLAG = '0' THEN
           V_SETOUT_FLAG := '1';
           V_SETOUT      := 'FALSE';
@@ -368,7 +361,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                           .V_REGION_ID
                        AND VM.CSN = VCQ.CSN)
                AND (V_ISNULL_MINCSN_FLAG = 'TRUE' OR VCQ.CSN < V_MIN_CSN)
-               AND VCQ.MANUFACTURE_STATUS <> '3' --ADD 2017-11-16 ≈≈≥˝µÙπ˝80µ„µƒ≥µ
+               AND VCQ.MANUFACTURE_STATUS <> '3' --ADD 2017-11-16 ÊéíÈô§ÊéâËøá80ÁÇπÁöÑËΩ¶
                AND (V_ISNULL_MAXCSN_FLAG = 'TRUE' OR
                    VCQ.CSN > V_TAB_TYPE_CSN_REGION(L).V_MAX_CSN)
                AND ('TRUE' = V_SETOUT OR
@@ -404,7 +397,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
          WHERE VM.REGION_ID = R.REGION_ID
            AND R.GROUP_NO = V_TAB_TYPE_GROUP_NO(N).V_GROUP_NO
            AND VM.QAS_LOCATION_ORDER <> 0;
-        --…æ≥˝π§ŒªÀ≥–Ú=0µƒº«¬º
+     
         IF V_MAX_CSN IS NULL THEN
           CONTINUE;
         ELSE
@@ -417,7 +410,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
     
     END IF;
   
-    --ADD 2017-11-14 …˙≥…ÕÍŒª“∆÷Æ∫Ûµ˜”√ŒÔ¡œœ˚∫ƒ
+ 
     PG_MCO_VEPS_CALC_CONSUME.SP_MCO_VEPS_CALC_CONSUME(I_USER_ID => I_USER,
                                                       O_STATUS  => O_STATUS,
                                                       O_RESULT  => O_RESULT);
@@ -427,7 +420,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
       ROLLBACK;
       V_SQLERRM := SUBSTR(DBMS_UTILITY.FORMAT_ERROR_BACKTRACE, 11) || '. ' ||
                    SQLERRM;
-      --≤Â»Î“Ï≥£»’÷æ
+      --ÊèíÂÖ•ÂºÇÂ∏∏Êó•Âøó
       PG_SYS_LOG.SP_SYS_PROGRAM_LOG('PG_ORD_VEPS_MOVEMENT.VIECHLE_MOVEMENT',
                                     '',
                                     V_SQLERRM);
@@ -443,17 +436,14 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
       O_RESULT := 'VEPS MOVEMENT QUEUE FAIL';
   END VIECHLE_MOVEMENT;
 
-  /******************************************************/
-  /* Created : 2017-10-30 16:11:04                     */
-  /* Description: VEPS≥µ¡æŒª“∆                         */
-  /*****************************************************/
+ 
 
   PROCEDURE VIECHLE_MOVEMENT_OLD(I_USER   IN NUMBER,
                                  O_STATUS OUT VARCHAR2,
                                  O_RESULT OUT VARCHAR2) AS
   
-    V_SQLERRM VARCHAR2(1000); --¥ÌŒÛ–≈œ¢
-    --V_MONITOR_PARAMS        VARCHAR2(1000); -- ±®æØ ±µƒ≤Œ ˝ºØ∫œ
+    V_SQLERRM VARCHAR2(1000); --ÈîôËØØ‰ø°ÊÅØ
+    --V_MONITOR_PARAMS        VARCHAR2(1000); -- Êä•Ë≠¶Êó∂ÁöÑÂèÇÊï∞ÈõÜÂêà
     --V_MONITOR_WORKSHOP_CODE TM_MDS_WORKSHOP.WORKSHOP_CODE%TYPE;
     V_MONITOR_REGION_ID   TM_MDS_REGION.REGION_ID%TYPE;
     V_MONITOR_REGION_CODE TM_MDS_REGION.REGION_CODE%TYPE;
@@ -474,16 +464,16 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
     V_ISNULL_FIRST_FLAG  VARCHAR2(10);
     V_ISNULL_LAST_FLAG   VARCHAR2(10);
   
-    TYPE T_CAR_QUEUE IS TABLE OF VARCHAR2(4000); --∂®“Â±Ì¿‡–Õ
+    TYPE T_CAR_QUEUE IS TABLE OF VARCHAR2(4000); --ÂÆö‰πâË°®Á±ªÂûã
     VT_CAR_QUEUE T_CAR_QUEUE;
   
-    TYPE T_CAR_INFO IS TABLE OF VARCHAR2(4000); --∂®“Â±Ì¿‡–Õ
+    TYPE T_CAR_INFO IS TABLE OF VARCHAR2(4000); --ÂÆö‰πâË°®Á±ªÂûã
     VT_CAR_INFO T_CAR_INFO;
   
-    TYPE T_CAR_MOVEMENT IS TABLE OF VARCHAR2(4000); --∂®“Â±Ì¿‡–Õ
+    TYPE T_CAR_MOVEMENT IS TABLE OF VARCHAR2(4000); --ÂÆö‰πâË°®Á±ªÂûã
     VT_CAR_MOVEMENT T_CAR_MOVEMENT;
   
-    C_MONITOR_TYPE_MOVEMENT CONSTANT VARCHAR2(20) := '550016'; -- …˙≥…≥µ¡æŒª“∆Ω⁄≈ƒ ß∞‹±®æØ¥˙¬Î
+    C_MONITOR_TYPE_MOVEMENT CONSTANT VARCHAR2(20) := '550016'; 
   
     CURSOR CSR_REGION_VEPS IS(
       SELECT R.REGION_ID, R.REGION_SIZE
@@ -520,7 +510,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
     V_TAB_TYPE_GROUP_NO TAB_TYPE_GROUP_NO;
   
   BEGIN
-    --œµÕ≥≥ı ºªØ£¨∏˘æ›√ø∏ˆEPS¿‡–Õº‡ ”«¯”Úµƒ¥Û–°£¨∞¥’’π§ŒªÀ≥–Ú“¿¥ŒΩ®¡¢∏˜∏ˆ«¯”Úµƒ≥ı ºŒª“∆£¨TT_ORD_EPS_MOVEMENT
+   
     FOR V_REGION_VEPS IN CSR_REGION_VEPS LOOP
       INSERT INTO TT_ORD_VEPS_MOVEMENT
         (CAR_QUEUE_REGION_ID,
@@ -545,15 +535,15 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
         CONNECT BY ROWNUM <= V_REGION_VEPS.REGION_SIZE;
     END LOOP;
   
-    --…æ≥˝π§ŒªÀ≥–Ú=0µƒº«¬º
+    --Âà†Èô§Â∑•‰ΩçÈ°∫Â∫è=0ÁöÑËÆ∞ÂΩï
     DELETE FROM TT_ORD_VEPS_MOVEMENT VM WHERE VM.QAS_LOCATION_ORDER = 0;
   
-    --∏¸–¬π§ŒªÀ≥–Ú>0µƒº«¬ºCSN=NULL£¨PVI=NULL
+    --Êõ¥Êñ∞Â∑•‰ΩçÈ°∫Â∫è>0ÁöÑËÆ∞ÂΩïCSN=NULLÔºåPVI=NULL
     UPDATE TT_ORD_VEPS_MOVEMENT VM
        SET VM.CSN = NULL, VM.PVI = NULL
      WHERE VM.QAS_LOCATION_ORDER > 0;
   
-    --ªÒ»°Õ¨“ªπ§≥ß£¨≥µº‰◊Ó–¬µƒ“ªÃı ˝æ›  
+    --Ëé∑ÂèñÂêå‰∏ÄÂ∑•ÂéÇÔºåËΩ¶Èó¥ÊúÄÊñ∞ÁöÑ‰∏ÄÊù°Êï∞ÊçÆ  
     SELECT QI.QAS_INTERFACE_ID,
            QI.PLANT_CODE,
            QI.WORKSHOP_CODE,
@@ -568,9 +558,9 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
              GROUP BY OQI.PLANT_CODE, OQI.WORKSHOP_CODE);
   
     IF V_TAB_TYPE_ORD_QAS.COUNT > 0 THEN
-      --—≠ª∑¥¶¿ÌQASΩ”ø⁄ ˝æ›
+   
       FOR I IN V_TAB_TYPE_ORD_QAS.FIRST .. V_TAB_TYPE_ORD_QAS.LAST LOOP
-        --∞¥∂∫∫≈«–∑÷QAS≥µ¡æŒª“∆–≈œ¢
+       
         SELECT COLUMN_VALUE
           BULK COLLECT
           INTO VT_CAR_QUEUE
@@ -579,13 +569,12 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                                       LENGTH(V_TAB_TYPE_ORD_QAS(I)
                                              .V_CAR_QUEUE) - 1),
                                ','));
-        --—≠ª∑¥¶¿ÌQAS≥µ¡æŒª“∆–≈œ¢                       
-        FOR J IN VT_CAR_QUEUE.FIRST .. VT_CAR_QUEUE.LAST LOOP
-          --ªÒ»°º‡ ”«¯”Ú¥˙¬Î
+                          
+       
           V_MONITOR_REGION_CODE := SUBSTR(TRIM(VT_CAR_QUEUE(J)),
                                           1,
                                           INSTR(TRIM(VT_CAR_QUEUE(J)), '=') - 1);
-          --ªÒ»°º‡ ”«¯”ÚID                               
+                                 
           BEGIN
             SELECT R.REGION_ID
               INTO V_MONITOR_REGION_ID
@@ -601,7 +590,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                                                          NULL);
               CONTINUE;
           END;
-          --∞¥|«–∑÷√ø∏ˆ≥µ¡æµƒŒª÷√–≈œ¢
+      
           SELECT COLUMN_VALUE
             BULK COLLECT
             INTO VT_CAR_INFO
@@ -631,7 +620,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                 CONTINUE;
             END;
           
-            --≥µ–Õ «0£¨129£¨256¥˙±Ì∏√π§Œª «∏ˆø’∞Â,÷±Ω”∏¸–¬PVI,CSNŒ™ø’
+            --ËΩ¶ÂûãÊòØ0Ôºå129Ôºå256‰ª£Ë°®ËØ•Â∑•‰ΩçÊòØ‰∏™Á©∫Êùø,Áõ¥Êé•Êõ¥Êñ∞PVI,CSN‰∏∫Á©∫
             IF VT_CAR_MOVEMENT(3) = '0' OR VT_CAR_MOVEMENT(3) = '129' OR
                VT_CAR_MOVEMENT(3) = '256' THEN
               UPDATE TT_ORD_VEPS_MOVEMENT VM
@@ -640,7 +629,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                  AND VM.QAS_LOCATION_ORDER = VT_CAR_MOVEMENT(1);
             END IF;
           
-            --≥µ–Õ≤ª «0£¨129£¨256÷±Ω”∏¸–¬PVI,CSN
+        
             IF VT_CAR_MOVEMENT(3) <> '0' AND VT_CAR_MOVEMENT(3) <> '129' AND
                VT_CAR_MOVEMENT(3) <> '256' THEN
               UPDATE TT_ORD_VEPS_MOVEMENT VM
@@ -651,7 +640,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
           END LOOP;
         END LOOP;
       
-        --ADD 2017-11-14 ¥¶¿ÌÕÍ÷Æ∫Û–Ë“™∏¸–¬◊¥Ã¨Œ™“—¥¶¿Ì
+      
         UPDATE TI_ORD_QAS_INTERFACE QI
            SET QI.PROCESS_STATUS = '1'
          WHERE QI.QAS_INTERFACE_ID = V_TAB_TYPE_ORD_QAS(I)
@@ -691,7 +680,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
             FROM TM_MDS_REGION R
            WHERE R.REGION_ID = V_TAB_TYPE_CSN_REGION(1).V_REGION_ID;
         
-          -- «(1)∑Ò(0)º∆À„setout≥µ¡æ 0:’˝≥£/1:setout/2:setin/3:produced
+      
           IF V_SETOUT_FLAG = '0' THEN
             V_SETOUT_FLAG := '1';
             V_SETOUT      := 'FALSE';
@@ -726,7 +715,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                      WHERE VM.REGION_ID = V_TAB_TYPE_CSN_REGION(1)
                           .V_REGION_ID
                        AND VM.CSN = VCQ.CSN)
-               AND VCQ.MANUFACTURE_STATUS <> '3' --ADD 2017-11-16 ≈≈≥˝µÙπ˝80µ„µƒ≥µ
+               AND VCQ.MANUFACTURE_STATUS <> '3' 
                AND ('TRUE' = V_SETOUT OR
                    VCQ.MANUFACTURE_STATUS <> V_SETOUT_FLAG);
           CONTINUE;
@@ -774,22 +763,21 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                        WHERE VM.REGION_ID = V_TAB_TYPE_CSN_REGION(1)
                             .V_REGION_ID
                          AND VM.CSN = VCQ.CSN)
-                 AND VCQ.MANUFACTURE_STATUS <> '3' --ADD 2017-11-16 ≈≈≥˝µÙπ˝80µ„µƒ≥µ
+                 AND VCQ.MANUFACTURE_STATUS <> '3' 
                  AND ('TRUE' = V_SETOUT OR
                      VCQ.MANUFACTURE_STATUS <> V_SETOUT_FLAG);
             CONTINUE;
           END IF;
         END IF;
       
-        --ADD 2017-11-14 º∆À„ª∫≥Â«¯≥µ¡æ
+      
         FOR L IN V_TAB_TYPE_CSN_REGION.FIRST .. V_TAB_TYPE_CSN_REGION.LAST LOOP
         
           SELECT R.REGION_ORDER, R.WORKSHOP_ID, R.GROUP_NO, R.SETOUT_FLAG
             INTO V_REGION_ORDER, V_WORKSHOP_ID, V_GROUP_NO, V_SETOUT_FLAG
             FROM TM_MDS_REGION R
            WHERE R.REGION_ID = V_TAB_TYPE_CSN_REGION(L).V_REGION_ID;
-        
-          -- «(1)∑Ò(0)º∆À„setout≥µ¡æ 0:’˝≥£/1:setout/2:setin/3:produced
+     
           IF V_SETOUT_FLAG = '0' THEN
             V_SETOUT_FLAG := '1';
             V_SETOUT      := 'FALSE';
@@ -834,7 +822,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                            AND VM.CSN = VCQ.CSN)
                    AND VCQ.CSN >
                        NVL(V_TAB_TYPE_CSN_REGION(L).V_MAX_CSN, '0')
-                   AND VCQ.MANUFACTURE_STATUS <> '3' --ADD 2017-11-16 ≈≈≥˝µÙπ˝80µ„µƒ≥µ
+                   AND VCQ.MANUFACTURE_STATUS <> '3' --ADD 2017-11-16 ÊéíÈô§ÊéâËøá80ÁÇπÁöÑËΩ¶
                    AND ('TRUE' = V_SETOUT OR
                        VCQ.MANUFACTURE_STATUS <> V_SETOUT_FLAG);
             ELSE
@@ -884,7 +872,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
                   FROM TT_ORD_VEPS_CAR_QUEUE VCQ
                  WHERE (V_ISNULL_MINCSN_FLAG = 'TRUE' OR
                        VCQ.CSN < V_MIN_CSN)
-                   AND VCQ.MANUFACTURE_STATUS <> '3' --ADD 2017-11-16 ≈≈≥˝µÙπ˝80µ„µƒ≥µ
+                   AND VCQ.MANUFACTURE_STATUS <> '3' --ADD 2017-11-16 ÊéíÈô§ÊéâËøá80ÁÇπÁöÑËΩ¶
                    AND (V_ISNULL_MAXCSN_FLAG = 'TRUE' OR
                        VCQ.CSN > V_TAB_TYPE_CSN_REGION(L).V_MAX_CSN)
                    AND ('TRUE' = V_SETOUT OR
@@ -896,7 +884,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
       END LOOP;
     END IF;
   
-    --ADD 2017-11-14 …˙≥…ÕÍŒª“∆÷Æ∫Ûµ˜”√ŒÔ¡œœ˚∫ƒ
+ 
     /* PG_MCO_VEPS_CALC_CONSUME.SP_MCO_VEPS_CALC_CONSUME(I_USER_ID => I_USER,
     O_STATUS  => O_STATUS,
     O_RESULT  => O_RESULT);*/
@@ -906,7 +894,7 @@ CREATE OR REPLACE PACKAGE BODY PG_ORD_VEPS_MOVEMENT AS
       ROLLBACK;
       V_SQLERRM := SUBSTR(DBMS_UTILITY.FORMAT_ERROR_BACKTRACE, 11) || '. ' ||
                    SQLERRM;
-      --≤Â»Î“Ï≥£»’÷æ
+      --ÊèíÂÖ•ÂºÇÂ∏∏Êó•Âøó
       PG_SYS_LOG.SP_SYS_PROGRAM_LOG('PG_ORD_VEPS_MOVEMENT.VIECHLE_MOVEMENT',
                                     '',
                                     V_SQLERRM);
